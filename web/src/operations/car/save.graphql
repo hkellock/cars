@@ -1,0 +1,10 @@
+mutation saveCar($car: CarInput!) {
+  createCar(input: $car) {
+    brand
+    model
+    type
+    price
+    yearlyTax
+    wltpConsumption
+  }
+}

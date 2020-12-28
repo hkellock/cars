@@ -1,0 +1,11 @@
+query listCars {
+  cars {
+    id
+    brand
+    model
+    type
+    price
+    yearlyTax
+    wltpConsumption
+  }
+}
