@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "prettier": "cd api && yarn prettier && cd ../web && yarn prettier",
+    "format": "cd api && yarn format && cd ../web && yarn format"
+  }
+}
