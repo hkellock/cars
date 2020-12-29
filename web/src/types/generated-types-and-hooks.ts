@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
+import { FieldPolicy, FieldReadFunction, TypePolicies, TypePolicy } from '@apollo/client/cache';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -18,11 +19,17 @@ export type Car = {
   id: Scalars['String'];
   brand: Scalars['String'];
   model: Scalars['String'];
-  type: Scalars['String'];
+  type: CarType;
   price: Scalars['Float'];
   yearlyTax: Scalars['Float'];
   wltpConsumption: Scalars['Float'];
 };
+
+export enum CarType {
+  Electric = 'Electric',
+  Petrol = 'Petrol',
+  Diesel = 'Diesel'
+}
 
 export type Query = {
   __typename?: 'Query';
@@ -32,12 +39,19 @@ export type Query = {
 export type Mutation = {
   __typename?: 'Mutation';
   createCar: Car;
+  editCar: Car;
   removeCar: Scalars['String'];
 };
 
 
 export type MutationCreateCarArgs = {
   input: CarInput;
+};
+
+
+export type MutationEditCarArgs = {
+  input: CarInput;
+  id: Scalars['String'];
 };
 
 
@@ -54,12 +68,6 @@ export type CarInput = {
   wltpConsumption: Scalars['Float'];
 };
 
-export enum CarType {
-  Electric = 'Electric',
-  Petrol = 'Petrol',
-  Diesel = 'Diesel'
-}
-
 export type ListCarsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -71,22 +79,46 @@ export type ListCarsQuery = (
   )> }
 );
 
-export type SaveCarMutationVariables = Exact<{
+export type RemoveCarMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type RemoveCarMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'removeCar'>
+);
+
+export type AddCarMutationVariables = Exact<{
   car: CarInput;
 }>;
 
 
-export type SaveCarMutation = (
+export type AddCarMutation = (
   { __typename?: 'Mutation' }
   & { createCar: (
     { __typename?: 'Car' }
-    & Pick<Car, 'brand' | 'model' | 'type' | 'price' | 'yearlyTax' | 'wltpConsumption'>
+    & Pick<Car, 'id' | 'brand' | 'model' | 'type' | 'price' | 'yearlyTax' | 'wltpConsumption'>
+  ) }
+);
+
+export type ModifyCarMutationVariables = Exact<{
+  id: Scalars['String'];
+  car: CarInput;
+}>;
+
+
+export type ModifyCarMutation = (
+  { __typename?: 'Mutation' }
+  & { editCar: (
+    { __typename?: 'Car' }
+    & Pick<Car, 'id' | 'brand' | 'model' | 'type' | 'price' | 'yearlyTax' | 'wltpConsumption'>
   ) }
 );
 
 
 export const ListCarsDocument = gql`
-    query listCars {
+    query ListCars {
   cars {
     id
     brand
@@ -123,9 +155,40 @@ export function useListCarsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<L
 export type ListCarsQueryHookResult = ReturnType<typeof useListCarsQuery>;
 export type ListCarsLazyQueryHookResult = ReturnType<typeof useListCarsLazyQuery>;
 export type ListCarsQueryResult = Apollo.QueryResult<ListCarsQuery, ListCarsQueryVariables>;
-export const SaveCarDocument = gql`
-    mutation saveCar($car: CarInput!) {
+export const RemoveCarDocument = gql`
+    mutation RemoveCar($id: String!) {
+  removeCar(id: $id)
+}
+    `;
+export type RemoveCarMutationFn = Apollo.MutationFunction<RemoveCarMutation, RemoveCarMutationVariables>;
+
+/**
+ * __useRemoveCarMutation__
+ *
+ * To run a mutation, you first call `useRemoveCarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveCarMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeCarMutation, { data, loading, error }] = useRemoveCarMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useRemoveCarMutation(baseOptions?: Apollo.MutationHookOptions<RemoveCarMutation, RemoveCarMutationVariables>) {
+        return Apollo.useMutation<RemoveCarMutation, RemoveCarMutationVariables>(RemoveCarDocument, baseOptions);
+      }
+export type RemoveCarMutationHookResult = ReturnType<typeof useRemoveCarMutation>;
+export type RemoveCarMutationResult = Apollo.MutationResult<RemoveCarMutation>;
+export type RemoveCarMutationOptions = Apollo.BaseMutationOptions<RemoveCarMutation, RemoveCarMutationVariables>;
+export const AddCarDocument = gql`
+    mutation AddCar($car: CarInput!) {
   createCar(input: $car) {
+    id
     brand
     model
     type
@@ -135,28 +198,101 @@ export const SaveCarDocument = gql`
   }
 }
     `;
-export type SaveCarMutationFn = Apollo.MutationFunction<SaveCarMutation, SaveCarMutationVariables>;
+export type AddCarMutationFn = Apollo.MutationFunction<AddCarMutation, AddCarMutationVariables>;
 
 /**
- * __useSaveCarMutation__
+ * __useAddCarMutation__
  *
- * To run a mutation, you first call `useSaveCarMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSaveCarMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useAddCarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddCarMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [saveCarMutation, { data, loading, error }] = useSaveCarMutation({
+ * const [addCarMutation, { data, loading, error }] = useAddCarMutation({
  *   variables: {
  *      car: // value for 'car'
  *   },
  * });
  */
-export function useSaveCarMutation(baseOptions?: Apollo.MutationHookOptions<SaveCarMutation, SaveCarMutationVariables>) {
-        return Apollo.useMutation<SaveCarMutation, SaveCarMutationVariables>(SaveCarDocument, baseOptions);
+export function useAddCarMutation(baseOptions?: Apollo.MutationHookOptions<AddCarMutation, AddCarMutationVariables>) {
+        return Apollo.useMutation<AddCarMutation, AddCarMutationVariables>(AddCarDocument, baseOptions);
       }
-export type SaveCarMutationHookResult = ReturnType<typeof useSaveCarMutation>;
-export type SaveCarMutationResult = Apollo.MutationResult<SaveCarMutation>;
-export type SaveCarMutationOptions = Apollo.BaseMutationOptions<SaveCarMutation, SaveCarMutationVariables>;
+export type AddCarMutationHookResult = ReturnType<typeof useAddCarMutation>;
+export type AddCarMutationResult = Apollo.MutationResult<AddCarMutation>;
+export type AddCarMutationOptions = Apollo.BaseMutationOptions<AddCarMutation, AddCarMutationVariables>;
+export const ModifyCarDocument = gql`
+    mutation ModifyCar($id: String!, $car: CarInput!) {
+  editCar(id: $id, input: $car) {
+    id
+    brand
+    model
+    type
+    price
+    yearlyTax
+    wltpConsumption
+  }
+}
+    `;
+export type ModifyCarMutationFn = Apollo.MutationFunction<ModifyCarMutation, ModifyCarMutationVariables>;
+
+/**
+ * __useModifyCarMutation__
+ *
+ * To run a mutation, you first call `useModifyCarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useModifyCarMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [modifyCarMutation, { data, loading, error }] = useModifyCarMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      car: // value for 'car'
+ *   },
+ * });
+ */
+export function useModifyCarMutation(baseOptions?: Apollo.MutationHookOptions<ModifyCarMutation, ModifyCarMutationVariables>) {
+        return Apollo.useMutation<ModifyCarMutation, ModifyCarMutationVariables>(ModifyCarDocument, baseOptions);
+      }
+export type ModifyCarMutationHookResult = ReturnType<typeof useModifyCarMutation>;
+export type ModifyCarMutationResult = Apollo.MutationResult<ModifyCarMutation>;
+export type ModifyCarMutationOptions = Apollo.BaseMutationOptions<ModifyCarMutation, ModifyCarMutationVariables>;
+export type CarKeySpecifier = ('id' | 'brand' | 'model' | 'type' | 'price' | 'yearlyTax' | 'wltpConsumption' | CarKeySpecifier)[];
+export type CarFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	brand?: FieldPolicy<any> | FieldReadFunction<any>,
+	model?: FieldPolicy<any> | FieldReadFunction<any>,
+	type?: FieldPolicy<any> | FieldReadFunction<any>,
+	price?: FieldPolicy<any> | FieldReadFunction<any>,
+	yearlyTax?: FieldPolicy<any> | FieldReadFunction<any>,
+	wltpConsumption?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type QueryKeySpecifier = ('cars' | QueryKeySpecifier)[];
+export type QueryFieldPolicy = {
+	cars?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MutationKeySpecifier = ('createCar' | 'editCar' | 'removeCar' | MutationKeySpecifier)[];
+export type MutationFieldPolicy = {
+	createCar?: FieldPolicy<any> | FieldReadFunction<any>,
+	editCar?: FieldPolicy<any> | FieldReadFunction<any>,
+	removeCar?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type TypedTypePolicies = TypePolicies & {
+	Car?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | CarKeySpecifier | (() => undefined | CarKeySpecifier),
+		fields?: CarFieldPolicy,
+	},
+	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),
+		fields?: QueryFieldPolicy,
+	},
+	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
+		fields?: MutationFieldPolicy,
+	}
+};

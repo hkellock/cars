@@ -1,5 +1,18 @@
-mutation saveCar($car: CarInput!) {
+mutation AddCar($car: CarInput!) {
   createCar(input: $car) {
+    id
+    brand
+    model
+    type
+    price
+    yearlyTax
+    wltpConsumption
+  }
+}
+
+mutation ModifyCar($id: String!, $car: CarInput!) {
+  editCar(id: $id, input: $car) {
+    id
     brand
     model
     type
