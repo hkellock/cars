@@ -1,3 +1,4 @@
+import { useReactiveVar } from '@apollo/client';
 import {
   Divider,
   FormControl,
@@ -6,6 +7,7 @@ import {
   Select,
 } from '@material-ui/core';
 import React, { useState } from 'react';
+import { carsVar } from '../../client';
 import {
   Car,
   CarType,
@@ -20,8 +22,14 @@ const Comparison: React.FC = () => {
     Car & { priceAfterSubsidies?: number; drivePrice?: number }
   >();
   const [yearlyDrive, setYearlyDrive] = useState(10000);
-  const { data } = useListCarsQuery();
-  const cars = data?.cars.map((car) => ({
+
+  const { loading, error, data } = useListCarsQuery({
+    onCompleted: (query) => carsVar(query.cars),
+  });
+
+  const reactiveCars = useReactiveVar(carsVar);
+
+  const cars = reactiveCars?.map((car) => ({
     ...car,
     priceAfterSubsidies: car.price - (car.type === CarType.Electric ? 2000 : 0),
     drivePrice:

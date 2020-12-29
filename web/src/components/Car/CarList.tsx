@@ -1,45 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  IconButton,
+  Container,
+  Fab,
   List,
   ListItem,
-  ListItemSecondaryAction,
   ListItemText,
 } from '@material-ui/core';
-import { Edit as EditIcon } from '@material-ui/icons';
-import CarAdd from './CarAdd';
-import { Car, useListCarsQuery } from '../../types/generated-types-and-hooks';
+import { Add } from '@material-ui/icons';
+import EditDialog, { defaultCarInput } from './EditDialog';
+import {
+  Car,
+  CarInput,
+  useListCarsQuery,
+} from '../../types/generated-types-and-hooks';
+import { useReactiveVar } from '@apollo/client';
+import { carsVar } from '../../client';
 
 const CarList: React.FC = () => {
-  const { loading, error, data } = useListCarsQuery();
+  const [selectedCar, setSelectedCar] = useState<CarInput | undefined>(
+    undefined,
+  );
+  const { loading, error, data } = useListCarsQuery({
+    onCompleted: (query) => carsVar(query.cars),
+  });
+  const cars = useReactiveVar(carsVar);
 
   if (loading) return <p>Loading...</p>;
   if (error || !data) return <p>Error!</p>;
 
-  const handleToggle = (car: Car) => () => {
-    console.log(`${car.id} toggled`);
+  const handleAddStart = () => {
+    setSelectedCar({ ...defaultCarInput });
   };
 
-  const handleEdit = (car: Car) => () => {
-    console.log(`${car.id} edit requested`);
+  const handleEditStart = (car: Car) => () => {
+    setSelectedCar(car);
   };
 
   return (
-    <>
+    <Container maxWidth="sm">
       <List>
-        {data.cars.map((car) => (
-          <ListItem key={car.id} button onClick={handleToggle(car)}>
+        {cars.map((car) => (
+          <ListItem key={car.id} button onClick={handleEditStart(car)}>
             <ListItemText primary={car.brand} secondary={car.model} />
-            <ListItemSecondaryAction onClick={handleEdit(car)}>
-              <IconButton>
-                <EditIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
           </ListItem>
         ))}
       </List>
-      <CarAdd />
-    </>
+      <Fab color="primary" onClick={handleAddStart}>
+        <Add />
+      </Fab>
+      <EditDialog car={selectedCar} setCar={setSelectedCar} />
+    </Container>
   );
 };
 
