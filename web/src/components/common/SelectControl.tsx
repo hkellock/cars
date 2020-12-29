@@ -2,11 +2,16 @@ import { FormControl, InputLabel, Select } from '@material-ui/core';
 import React, { Dispatch, SetStateAction } from 'react';
 import { baseProps } from './BaseControl';
 
+export type Option = {
+  value: string;
+  label: string;
+};
+
 type SelectControlProps<T> = {
   label: string;
   value: T;
   setValue: Dispatch<SetStateAction<T>>;
-  options: T[];
+  options: T[] | Option[];
 };
 
 const SelectControl = <T extends string>(props: SelectControlProps<T>) => (
@@ -20,8 +25,11 @@ const SelectControl = <T extends string>(props: SelectControlProps<T>) => (
       value={props.value}
       onChange={(e) => props.setValue(e.target.value as T)}
     >
-      {Object.values(props.options).map((type) => (
-        <option value={type}>{type}</option>
+      <option key="empty" value="" />
+      {Object.values(props.options).map((option) => (
+        <option key={option.value ?? option} value={option.value ?? option}>
+          {option.label ?? option}
+        </option>
       ))}
     </Select>
   </FormControl>

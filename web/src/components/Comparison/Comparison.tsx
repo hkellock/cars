@@ -1,11 +1,5 @@
 import { useReactiveVar } from '@apollo/client';
-import {
-  Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  Select,
-} from '@material-ui/core';
+import { Divider, Grid } from '@material-ui/core';
 import React, { useState } from 'react';
 import { carsVar } from '../../client';
 import {
@@ -13,6 +7,15 @@ import {
   CarType,
   useListCarsQuery,
 } from '../../types/generated-types-and-hooks';
+import SelectControl, { Option } from '../common/SelectControl';
+
+const mapCarToOption = (car: Car): Option => ({
+  value: car.id,
+  label: `${car.brand} ${car.model}`,
+});
+
+const filterForElectric = (car: Car): boolean => car.type === CarType.Electric;
+const filterOutElectric = (car: Car): boolean => car.type !== CarType.Electric;
 
 const Comparison: React.FC = () => {
   const [firstCar, setFirstCar] = useState<
@@ -27,9 +30,9 @@ const Comparison: React.FC = () => {
     onCompleted: (query) => carsVar(query.cars),
   });
 
-  const reactiveCars = useReactiveVar(carsVar);
+  const reactiveCars = useReactiveVar(carsVar) ?? [];
 
-  const cars = reactiveCars?.map((car) => ({
+  const cars = reactiveCars.map((car) => ({
     ...car,
     priceAfterSubsidies: car.price - (car.type === CarType.Electric ? 2000 : 0),
     drivePrice:
@@ -45,56 +48,28 @@ const Comparison: React.FC = () => {
   return (
     <Grid container>
       <Grid item xs={12}>
-        <p> </p>
+        <p></p>
       </Grid>
       <Grid item xs={4}>
         <p></p>
       </Grid>
+
       <Grid item xs={4}>
-        <FormControl variant="outlined" color="primary">
-          <InputLabel htmlFor="firstCar">First car</InputLabel>
-          <Select
-            id="firstCar"
-            native
-            fullWidth
-            label="First car"
-            value={firstCar?.id}
-            onChange={(e) =>
-              setFirstCar(
-                cars?.find((car) => car.id === (e.target.value as string)),
-              )
-            }
-          >
-            {cars
-              ?.filter((car) => car.type !== CarType.Electric)
-              .map((car) => (
-                <option value={car.id}>{`${car.brand} ${car.model}`}</option>
-              ))}
-          </Select>
-        </FormControl>
+        <SelectControl
+          label="First car"
+          value={firstCar?.id ?? ''}
+          setValue={(id) => setFirstCar(cars.find((car) => car.id === id))}
+          options={cars.filter(filterOutElectric).map(mapCarToOption)}
+        />
       </Grid>
+
       <Grid item xs={4}>
-        <FormControl variant="outlined" color="primary">
-          <InputLabel htmlFor="secondCar">Second car</InputLabel>
-          <Select
-            id="secondCar"
-            native
-            fullWidth
-            label="Second car"
-            value={secondCar?.id}
-            onChange={(e) =>
-              setSecondCar(
-                cars?.find((car) => car.id === (e.target.value as string)),
-              )
-            }
-          >
-            {cars
-              ?.filter((car) => car.type === CarType.Electric)
-              .map((car) => (
-                <option value={car.id}>{`${car.brand} ${car.model}`}</option>
-              ))}
-          </Select>
-        </FormControl>
+        <SelectControl
+          label="Second car"
+          value={secondCar?.id ?? ''}
+          setValue={(id) => setSecondCar(cars.find((car) => car.id === id))}
+          options={cars.filter(filterForElectric).map(mapCarToOption)}
+        />
       </Grid>
 
       <Grid item xs={4}>
