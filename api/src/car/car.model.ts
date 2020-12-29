@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { CarType } from './car.types';
 
 @ObjectType()
 export class Car {
@@ -11,7 +12,7 @@ export class Car {
   @Field()
   model: string;
 
-  @Field()
+  @Field((type) => CarType!)
   type: string;
 
   @Field((type) => Number!)

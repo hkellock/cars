@@ -20,6 +20,11 @@ export class CarService {
     return this.carRepository.save(car);
   }
 
+  async edit(id: string, input: CarInput): Promise<Car> {
+    const car = this.carRepository.create({ ...input, id });
+    return this.carRepository.save(car);
+  }
+
   async remove(id: string): Promise<string> {
     await this.carRepository.delete(id);
     return id;

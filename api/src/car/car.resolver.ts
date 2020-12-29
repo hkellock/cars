@@ -17,6 +17,11 @@ export class CarResolver {
     return await this.carService.create(input);
   }
 
+  @Mutation(() => Car!)
+  async editCar(@Args('id') id: string, @Args('input') input: CarInput) {
+    return await this.carService.edit(id, input);
+  }
+
   @Mutation(() => String!)
   async removeCar(@Args('id') id: string) {
     return await this.carService.remove(id);

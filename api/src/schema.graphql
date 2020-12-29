@@ -6,24 +6,6 @@ type Car {
   id: String!
   brand: String!
   model: String!
-  type: String!
-  price: Float!
-  yearlyTax: Float!
-  wltpConsumption: Float!
-}
-
-type Query {
-  cars: [Car!]!
-}
-
-type Mutation {
-  createCar(input: CarInput!): Car!
-  removeCar(id: String!): String!
-}
-
-input CarInput {
-  brand: String!
-  model: String!
   type: CarType!
   price: Float!
   yearlyTax: Float!
@@ -34,4 +16,23 @@ enum CarType {
   Electric
   Petrol
   Diesel
+}
+
+type Query {
+  cars: [Car!]!
+}
+
+type Mutation {
+  createCar(input: CarInput!): Car!
+  editCar(input: CarInput!, id: String!): Car!
+  removeCar(id: String!): String!
+}
+
+input CarInput {
+  brand: String!
+  model: String!
+  type: CarType!
+  price: Float!
+  yearlyTax: Float!
+  wltpConsumption: Float!
 }
