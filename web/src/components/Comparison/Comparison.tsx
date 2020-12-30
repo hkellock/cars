@@ -7,15 +7,14 @@ import {
   CarType,
   useListCarsQuery,
 } from '../../types/generated-types-and-hooks';
-import SelectControl, { Option } from '../common/SelectControl';
-
-const mapCarToOption = (car: Car): Option => ({
-  value: car.id,
-  label: `${car.brand} ${car.model}`,
-});
-
-const filterForElectric = (car: Car): boolean => car.type === CarType.Electric;
-const filterOutElectric = (car: Car): boolean => car.type !== CarType.Electric;
+import {
+  filterOutElectric,
+  mapCarToOption,
+  filterForElectric,
+  priceToString,
+  carToConsumptionString,
+} from '../../utils/carUtils';
+import SelectControl from '../common/SelectControl';
 
 const Comparison: React.FC = () => {
   const [firstCar, setFirstCar] = useState<
@@ -50,10 +49,10 @@ const Comparison: React.FC = () => {
       <Grid item xs={12}>
         <p></p>
       </Grid>
+
       <Grid item xs={4}>
         <p></p>
       </Grid>
-
       <Grid item xs={4}>
         <SelectControl
           label="First car"
@@ -62,7 +61,6 @@ const Comparison: React.FC = () => {
           options={cars.filter(filterOutElectric).map(mapCarToOption)}
         />
       </Grid>
-
       <Grid item xs={4}>
         <SelectControl
           label="Second car"
@@ -76,97 +74,50 @@ const Comparison: React.FC = () => {
         <p>Hinta</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {firstCar?.price.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-        </p>
+        <p>{priceToString(firstCar?.price)}</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {secondCar?.price.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-        </p>
+        <p>{priceToString(secondCar?.price)}</p>
       </Grid>
+
       <Grid item xs={4}>
         <p>Hinta tukien jälkeen</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {firstCar?.priceAfterSubsidies?.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-        </p>
+        <p>{priceToString(firstCar?.priceAfterSubsidies)}</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {secondCar?.priceAfterSubsidies?.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-        </p>
+        <p>{priceToString(secondCar?.priceAfterSubsidies)}</p>
       </Grid>
 
       <Grid item xs={4}>
         <p>Vero (per vuosi)</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {firstCar?.yearlyTax?.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-        </p>
+        <p>{priceToString(firstCar?.yearlyTax)}</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {secondCar?.yearlyTax?.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-        </p>
+        <p>{priceToString(secondCar?.yearlyTax)}</p>
       </Grid>
+
       <Grid item xs={4}>
         <p>Kulutus (per 100km)</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {`${firstCar?.wltpConsumption?.toLocaleString('fi-FI')} ${
-            firstCar?.type === CarType.Electric ? 'kWh/100km' : 'l/100km'
-          }`}
-        </p>
+        <p>{carToConsumptionString(firstCar)}</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {`${secondCar?.wltpConsumption?.toLocaleString('fi-FI')} ${
-            secondCar?.type === CarType.Electric ? 'kWh/100km' : 'l/100km'
-          }`}
-        </p>
+        <p>{carToConsumptionString(secondCar)}</p>
       </Grid>
+
       <Grid item xs={4}>
         <p>Kulutuksen hinta (per 100km)</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {firstCar?.drivePrice?.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-          /100km
-        </p>
+        <p>{priceToString(firstCar?.drivePrice)}/100km</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {secondCar?.drivePrice?.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-          /100km
-        </p>
+        <p>{priceToString(secondCar?.drivePrice)}/100km</p>
       </Grid>
 
       <Grid item xs={4}>
@@ -180,21 +131,12 @@ const Comparison: React.FC = () => {
         <p>Vuotuiset kustannukset</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {firstCarPricePerYear?.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-        </p>
+        <p>{priceToString(firstCarPricePerYear)}</p>
       </Grid>
       <Grid item xs={4}>
-        <p>
-          {secondCarPricePerYear?.toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
-        </p>
+        <p>{priceToString(secondCarPricePerYear)}</p>
       </Grid>
+
       <Divider variant="fullWidth" style={{ width: '100%' }} />
 
       <Grid item xs={8}>
@@ -202,26 +144,21 @@ const Comparison: React.FC = () => {
       </Grid>
       <Grid item xs={4}>
         <p>
-          {(
+          {priceToString(
             (secondCar?.priceAfterSubsidies ?? 0) -
-            (firstCar?.priceAfterSubsidies ?? 0)
-          ).toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
+              (firstCar?.priceAfterSubsidies ?? 0),
+          )}
         </p>
       </Grid>
+
       <Grid item xs={8}>
         <p>Tuotto-odotus (per vuosi)</p>
       </Grid>
       <Grid item xs={4}>
         <p>
-          {(
-            (firstCarPricePerYear ?? 0) - (secondCarPricePerYear ?? 0)
-          ).toLocaleString('fi-FI', {
-            style: 'currency',
-            currency: 'EUR',
-          })}
+          {priceToString(
+            (firstCarPricePerYear ?? 0) - (secondCarPricePerYear ?? 0),
+          )}
         </p>
       </Grid>
     </Grid>
