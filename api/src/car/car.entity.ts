@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/user/user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Car {
@@ -22,4 +23,7 @@ export class Car {
 
   @Column('float')
   wltpConsumption: number;
+
+  @ManyToOne((type) => User, (user) => user.cars)
+  user?: User;
 }
