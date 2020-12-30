@@ -6,19 +6,17 @@ export type GridRowProps = {
   elements: JSX.Element[];
 };
 
-const GridRow: React.FC<GridRowProps> = ({ titleElement, elements }) => {
-  return (
-    <>
-      <Grid item xs={4}>
-        {titleElement}
+const GridRow = ({ titleElement, elements }: GridRowProps): JSX.Element[] => {
+  return [
+    <Grid key="title" item xs={4}>
+      {titleElement}
+    </Grid>,
+    ...elements.map((element, index) => (
+      <Grid key={index} item xs={4}>
+        {element}
       </Grid>
-      {elements.map((element) => (
-        <Grid item xs={4}>
-          {element}
-        </Grid>
-      ))}
-    </>
-  );
+    )),
+  ];
 };
 
 export default GridRow;
