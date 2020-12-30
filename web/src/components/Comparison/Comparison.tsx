@@ -15,6 +15,7 @@ import {
   carToConsumptionString,
 } from '../../utils/carUtils';
 import SelectControl from '../common/SelectControl';
+import GridRow from './GridRow';
 
 const Comparison: React.FC = () => {
   const [firstCar, setFirstCar] = useState<
@@ -70,55 +71,44 @@ const Comparison: React.FC = () => {
         />
       </Grid>
 
-      <Grid item xs={4}>
-        <p>Hinta</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(firstCar?.price)}</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(secondCar?.price)}</p>
-      </Grid>
+      <GridRow
+        titleElement={<p>Hinta</p>}
+        elements={[
+          <p>{priceToString(firstCar?.price)}</p>,
+          <p>{priceToString(secondCar?.price)}</p>,
+        ]}
+      />
 
-      <Grid item xs={4}>
-        <p>Hinta tukien jälkeen</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(firstCar?.priceAfterSubsidies)}</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(secondCar?.priceAfterSubsidies)}</p>
-      </Grid>
+      <GridRow
+        titleElement={<p>Hinta tukien jälkeen</p>}
+        elements={[
+          <p>{priceToString(firstCar?.priceAfterSubsidies)}</p>,
+          <p>{priceToString(secondCar?.priceAfterSubsidies)}</p>,
+        ]}
+      />
 
-      <Grid item xs={4}>
-        <p>Vero (per vuosi)</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(firstCar?.yearlyTax)}</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(secondCar?.yearlyTax)}</p>
-      </Grid>
+      <GridRow
+        titleElement={<p>Vero (per vuosi)</p>}
+        elements={[
+          <p>{priceToString(firstCar?.yearlyTax)}</p>,
+          <p>{priceToString(secondCar?.yearlyTax)}</p>,
+        ]}
+      />
+      <GridRow
+        titleElement={<p>Kulutus (per 100km)</p>}
+        elements={[
+          <p>{carToConsumptionString(firstCar)}</p>,
+          <p>{carToConsumptionString(secondCar)}</p>,
+        ]}
+      />
 
-      <Grid item xs={4}>
-        <p>Kulutus (per 100km)</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{carToConsumptionString(firstCar)}</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{carToConsumptionString(secondCar)}</p>
-      </Grid>
-
-      <Grid item xs={4}>
-        <p>Kulutuksen hinta (per 100km)</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(firstCar?.drivePrice)}/100km</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(secondCar?.drivePrice)}/100km</p>
-      </Grid>
+      <GridRow
+        titleElement={<p>Kulutuksen hinta (per 100km)</p>}
+        elements={[
+          <p>{priceToString(firstCar?.drivePrice)}/100km</p>,
+          <p>{priceToString(secondCar?.drivePrice)}/100km</p>,
+        ]}
+      />
 
       <Grid item xs={4}>
         <p>Vuosikilometrit</p>
@@ -127,15 +117,13 @@ const Comparison: React.FC = () => {
         <p>{yearlyDrive.toLocaleString('fi-Fi')} km</p>
       </Grid>
 
-      <Grid item xs={4}>
-        <p>Vuotuiset kustannukset</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(firstCarPricePerYear)}</p>
-      </Grid>
-      <Grid item xs={4}>
-        <p>{priceToString(secondCarPricePerYear)}</p>
-      </Grid>
+      <GridRow
+        titleElement={<p>Vuotuiset kustannukset</p>}
+        elements={[
+          <p>{priceToString(firstCarPricePerYear)}</p>,
+          <p>{priceToString(secondCarPricePerYear)}</p>,
+        ]}
+      />
 
       <Divider variant="fullWidth" style={{ width: '100%' }} />
 
