@@ -14,7 +14,9 @@ type SelectControlProps<T> = {
   options: T[] | Option[];
 };
 
-const SelectControl = <T extends string>(props: SelectControlProps<T>) => (
+const SelectControl = <T extends string | number>(
+  props: SelectControlProps<T>,
+) => (
   <FormControl {...baseProps}>
     <InputLabel htmlFor={props.label.toLowerCase()}>{props.label}</InputLabel>
     <Select
