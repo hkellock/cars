@@ -10,6 +10,7 @@ import { CarModule } from './car/car.module';
 import { AuthModule } from './auth/auth.module';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
+import { jwtAuthGuardProvider } from './auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -23,6 +24,6 @@ import { UserModule } from './user/user.module';
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserService],
+  providers: [AppService, UserService, jwtAuthGuardProvider],
 })
 export class AppModule {}
