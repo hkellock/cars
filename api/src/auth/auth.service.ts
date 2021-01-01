@@ -22,11 +22,11 @@ export class AuthService {
   ): Promise<User | null> {
     // TODO: Validate idToken with external service
     // TODO: Check that email in idToken is the same as the username
-    const user = await this.userService.findOne(credentials.username);
-    if (user) {
-      return { username: user.username };
-    }
-    return null;
+    const user =
+      (await this.userService.findOne(credentials.username)) ??
+      (await this.userService.create(credentials.username));
+
+    return user ? { username: user.username } : null;
   }
 
   async login(credentials: LoginCredentials): Promise<AuthLogin> {

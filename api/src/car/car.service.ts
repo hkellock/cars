@@ -12,17 +12,17 @@ export class CarService {
   ) {}
 
   async findAll(): Promise<Car[]> {
-    return this.carRepository.find();
+    return await this.carRepository.find();
   }
 
   async create(input: CarInput): Promise<Car> {
     const car = this.carRepository.create(input);
-    return this.carRepository.save(car);
+    return await this.carRepository.save(car);
   }
 
   async edit(id: string, input: CarInput): Promise<Car> {
     const car = this.carRepository.create({ ...input, id });
-    return this.carRepository.save(car);
+    return await this.carRepository.save(car);
   }
 
   async remove(id: string): Promise<string> {
