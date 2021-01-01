@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ValidatedUser } from 'src/auth/jwt.strategy';
+import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { Car } from './car.entity';
 import { CarInput } from './car.input';
@@ -9,19 +11,21 @@ export class CarService {
   constructor(
     @InjectRepository(Car)
     private readonly carRepository: Repository<Car>,
+    private readonly userService: UserService,
   ) {}
 
   async findAll(): Promise<Car[]> {
     return await this.carRepository.find();
   }
 
-  async create(input: CarInput): Promise<Car> {
-    const car = this.carRepository.create(input);
+  async add(input: CarInput, validatedUser: ValidatedUser): Promise<Car> {
+    const user = await this.userService.findOne(validatedUser.username);
+    const car = this.carRepository.create({ ...input, user });
     return await this.carRepository.save(car);
   }
 
-  async edit(id: string, input: CarInput): Promise<Car> {
-    const car = this.carRepository.create({ ...input, id });
+  async edit(input: Car): Promise<Car> {
+    const car = this.carRepository.create(input);
     return await this.carRepository.save(car);
   }
 

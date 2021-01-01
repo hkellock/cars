@@ -2,6 +2,10 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  username: String!
+}
+
 type Car {
   id: String!
   brand: String!
@@ -18,17 +22,13 @@ enum CarType {
   Diesel
 }
 
-type User {
-  username: String!
-}
-
 type AuthLogin {
   access_token: String!
 }
 
 type Query {
-  cars: [Car!]!
   profile: User!
+  cars: [Car!]!
 }
 
 type Mutation {
