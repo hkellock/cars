@@ -4,6 +4,11 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtConstants } from './auth.constants';
 import { AccessTokenPayload } from './auth.service';
 
+export type ValidatedUser = {
+  userId: string;
+  username: string;
+};
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
@@ -14,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: AccessTokenPayload) {
+  async validate(payload: AccessTokenPayload): Promise<ValidatedUser> {
     return {
       userId: payload.sub, // TODO
       username: payload.username,

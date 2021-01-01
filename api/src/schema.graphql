@@ -18,12 +18,17 @@ enum CarType {
   Diesel
 }
 
+type User {
+  username: String!
+}
+
 type AuthLogin {
   access_token: String!
 }
 
 type Query {
   cars: [Car!]!
+  profile: User!
 }
 
 type Mutation {

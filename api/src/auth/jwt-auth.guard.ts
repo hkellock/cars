@@ -2,9 +2,18 @@ import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
+import type { ValidatedUser } from './jwt.strategy';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+
+export type ValidatedRequest = {
+  user: ValidatedUser;
+};
+
+export const getGqlRequest = (
+  context: ExecutionContext | GqlExecutionContext,
+): ValidatedRequest => GqlExecutionContext.create(context).getContext().req;
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -22,10 +31,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
     return super.canActivate(context);
   }
-  
+
   getRequest(context: ExecutionContext) {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
+    return getGqlRequest(context);
   }
 }
 

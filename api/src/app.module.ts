@@ -17,8 +17,8 @@ import { jwtAuthGuardProvider } from './auth/jwt-auth.guard';
     }),
     TypeOrmModule.forRoot(typeOrmConfig),
     CarModule,
-    AuthModule,
     UserModule,
+    AuthModule,
   ],
   providers: [jwtAuthGuardProvider],
 })
