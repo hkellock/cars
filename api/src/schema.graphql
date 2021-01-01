@@ -18,6 +18,10 @@ enum CarType {
   Diesel
 }
 
+type AuthLogin {
+  access_token: String!
+}
+
 type Query {
   cars: [Car!]!
 }
@@ -26,6 +30,7 @@ type Mutation {
   createCar(input: CarInput!): Car!
   editCar(input: CarInput!, id: String!): Car!
   removeCar(id: String!): String!
+  login(credentials: LoginCredentials!): AuthLogin!
 }
 
 input CarInput {
@@ -35,4 +40,9 @@ input CarInput {
   price: Float!
   yearlyTax: Float!
   wltpConsumption: Float!
+}
+
+input LoginCredentials {
+  username: String!
+  idToken: String!
 }

@@ -2,11 +2,13 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { CarService } from './car.service';
 import { Car } from './car.model';
 import { CarInput } from './car.input';
+import { Public } from 'src/auth/jwt-auth.guard';
 
 @Resolver(() => Car)
 export class CarResolver {
   constructor(private readonly carService: CarService) {}
 
+  @Public()
   @Query(() => [Car!]!)
   async cars() {
     return await this.carService.findAll();
