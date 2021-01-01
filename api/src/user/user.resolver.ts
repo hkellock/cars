@@ -10,6 +10,6 @@ export class UserResolver {
 
   @Query(() => User!)
   async profile(@CurrentUser() user: ValidatedUser) {
-    return await this.userService.findOne(user.username);
+    return await this.userService.findOneWithCars(user.username);
   }
 }

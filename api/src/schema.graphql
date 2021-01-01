@@ -2,10 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  username: String!
-}
-
 type Car {
   id: String!
   brand: String!
@@ -20,6 +16,11 @@ enum CarType {
   Electric
   Petrol
   Diesel
+}
+
+type User {
+  username: String!
+  cars: [Car!]!
 }
 
 type AuthLogin {
