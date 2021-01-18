@@ -1,5 +1,5 @@
-import { Grid } from '@material-ui/core';
 import React from 'react';
+import GridItem from '../common/GridItem';
 
 export type GridRowProps = {
   titleElement: JSX.Element;
@@ -8,13 +8,13 @@ export type GridRowProps = {
 
 const GridRow = ({ titleElement, elements }: GridRowProps): JSX.Element[] => {
   return [
-    <Grid key="title" item xs={4}>
+    <GridItem key="title" xs={4}>
       {titleElement}
-    </Grid>,
+    </GridItem>,
     ...elements.map((element, index) => (
-      <Grid key={index} item xs={4}>
+      <GridItem key={index} xs={4}>
         {element}
-      </Grid>
+      </GridItem>
     )),
   ];
 };

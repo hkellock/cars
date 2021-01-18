@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@apollo/client": "^3.3.6",
-    "@graphql-codegen/typescript-apollo-client-helpers": "^1.1.2",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@testing-library/jest-dom": "^5.11.4",
@@ -37,6 +36,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "^1.19.4",
     "@graphql-codegen/typescript": "^1.19.0",
+    "@graphql-codegen/typescript-apollo-client-helpers": "^1.1.2",
     "@graphql-codegen/typescript-operations": "^1.17.12",
     "@graphql-codegen/typescript-react-apollo": "^2.2.1",
     "prettier": "2.1.2"

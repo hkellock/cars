@@ -8,6 +8,7 @@ import {
 } from '../../types/generated-types-and-hooks';
 import { filterOutElectric, filterForElectric } from '../../utils/carUtils';
 import { transpose } from '../../utils/generalUtils';
+import GridItem from '../common/GridItem';
 import SelectControl from '../common/SelectControl';
 import CarColumns, { EnrichedCar } from './CarColumns';
 import GridRow, { GridRowProps } from './GridRow';
@@ -73,21 +74,21 @@ const Comparison: React.FC = () => {
 
   return (
     <Grid container>
-      <Grid item xs={12}>
+      <GridItem xs={12}>
         <p></p>
-      </Grid>
+      </GridItem>
 
-      <Grid item xs={4}>
+      <GridItem xs={4}>
         <p>Vuosittainen ajo</p>
-      </Grid>
-      <Grid item xs={8}>
+      </GridItem>
+      <GridItem xs={8}>
         <SelectControl
           label="Vuosikilometrit"
           value={yearlyDrive}
           setValue={setYearlyDrive}
           options={[10000, 15000, 20000, 30000, 40000]}
         />
-      </Grid>
+      </GridItem>
 
       {rowData.map((row) => GridRow({ ...row }))}
     </Grid>
