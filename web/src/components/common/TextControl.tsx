@@ -5,10 +5,10 @@ type TextControlProps = BaseControlProps & {
   setValue: Dispatch<SetStateAction<string>>;
 };
 
-const TextControl: React.FC<TextControlProps> = (props) => (
+const TextControl: React.FC<TextControlProps> = ({ setValue, ...props }) => (
   <BaseControl
     type="text"
-    onChange={(e) => props.setValue(e.target.value)}
+    onChange={(e) => setValue(e.target.value)}
     {...props}
   />
 );

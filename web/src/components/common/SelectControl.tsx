@@ -14,21 +14,24 @@ type SelectControlProps<T> = {
   options: T[] | Option[];
 };
 
-const SelectControl = <T extends string | number>(
-  props: SelectControlProps<T>,
-) => (
+const SelectControl = <T extends string | number>({
+  label,
+  value,
+  setValue,
+  options,
+}: SelectControlProps<T>) => (
   <FormControl {...baseProps}>
-    <InputLabel htmlFor={props.label.toLowerCase()}>{props.label}</InputLabel>
+    <InputLabel htmlFor={label.toLowerCase()}>{label}</InputLabel>
     <Select
-      id={props.label.toLowerCase()}
-      label={props.label}
+      id={label.toLowerCase()}
+      label={label}
       native
       fullWidth
-      value={props.value}
-      onChange={(e) => props.setValue(e.target.value as T)}
+      value={value}
+      onChange={(e) => setValue(e.target.value as T)}
     >
       <option key="empty" value="" />
-      {Object.values(props.options).map((option) => (
+      {Object.values(options).map((option) => (
         <option key={option.value ?? option} value={option.value ?? option}>
           {option.label ?? option}
         </option>

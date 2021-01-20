@@ -5,10 +5,13 @@ type NumberControlProps = BaseControlProps & {
   setValue: Dispatch<SetStateAction<number>>;
 };
 
-const NumberControl: React.FC<NumberControlProps> = (props) => (
+const NumberControl: React.FC<NumberControlProps> = ({
+  setValue,
+  ...props
+}) => (
   <BaseControl
     type="number"
-    onChange={(e) => props.setValue(Number(e.target.value))}
+    onChange={(e) => setValue(Number(e.target.value))}
     {...props}
   />
 );
