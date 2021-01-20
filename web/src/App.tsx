@@ -8,6 +8,7 @@ import Comparison from './components/Comparison/Comparison';
 import { Container } from '@material-ui/core';
 import Drawer from './components/Drawer/Drawer';
 import { SnackbarProvider } from 'notistack';
+import Login from './components/Login/Login';
 
 const App: React.FC = () => (
   <ApolloProvider client={client}>
@@ -19,6 +20,9 @@ const App: React.FC = () => (
             <Switch>
               <Route path="/cars">
                 <Cars />
+              </Route>
+              <Route path="/login">
+                <Login />
               </Route>
               <Route>
                 <Comparison />

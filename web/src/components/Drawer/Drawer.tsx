@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   AppBar,
+  Divider,
   IconButton,
   List,
   ListItem,
@@ -40,6 +41,8 @@ const Drawer: React.FC = () => {
           >
             <ListItemText primary="Comparison" />
           </ListItem>
+
+          <Divider />
           <ListItem
             button
             key="cars"
@@ -49,6 +52,18 @@ const Drawer: React.FC = () => {
             }}
           >
             <ListItemText primary="Manage cars" />
+          </ListItem>
+          <Divider />
+
+          <ListItem
+            button
+            key="login"
+            onClick={() => {
+              navigate('/login');
+              setOpen(false);
+            }}
+          >
+            <ListItemText primary="Login" />
           </ListItem>
         </List>
       </SwipeableDrawer>

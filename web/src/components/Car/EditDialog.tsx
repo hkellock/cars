@@ -17,7 +17,6 @@ import { addLocalCar, editLocalCar, removeLocalCar } from '../../client';
 import TextControl from '../common/TextControl';
 import SelectControl from '../common/SelectControl';
 import NumberControl from '../common/NumberControl';
-import { useSnackbar } from 'notistack';
 import useNotifications from '../../hooks/useNotifications';
 
 export const defaultCarInput: CarInput = {
