@@ -31,8 +31,20 @@ export enum CarType {
   Diesel = 'Diesel'
 }
 
+export type User = {
+  __typename?: 'User';
+  username: Scalars['String'];
+  cars: Array<Car>;
+};
+
+export type AuthLogin = {
+  __typename?: 'AuthLogin';
+  access_token: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  profile: User;
   cars: Array<Car>;
 };
 
@@ -41,6 +53,7 @@ export type Mutation = {
   createCar: Car;
   editCar: Car;
   removeCar: Scalars['String'];
+  login: AuthLogin;
 };
 
 
@@ -59,6 +72,11 @@ export type MutationRemoveCarArgs = {
   id: Scalars['String'];
 };
 
+
+export type MutationLoginArgs = {
+  credentials: LoginCredentials;
+};
+
 export type CarInput = {
   brand: Scalars['String'];
   model: Scalars['String'];
@@ -67,6 +85,24 @@ export type CarInput = {
   yearlyTax: Scalars['Float'];
   wltpConsumption: Scalars['Float'];
 };
+
+export type LoginCredentials = {
+  username: Scalars['String'];
+  idToken: Scalars['String'];
+};
+
+export type LoginMutationVariables = Exact<{
+  credentials: LoginCredentials;
+}>;
+
+
+export type LoginMutation = (
+  { __typename?: 'Mutation' }
+  & { login: (
+    { __typename?: 'AuthLogin' }
+    & Pick<AuthLogin, 'access_token'>
+  ) }
+);
 
 export type ListCarsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -117,6 +153,38 @@ export type ModifyCarMutation = (
 );
 
 
+export const LoginDocument = gql`
+    mutation Login($credentials: LoginCredentials!) {
+  login(credentials: $credentials) {
+    access_token
+  }
+}
+    `;
+export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
+
+/**
+ * __useLoginMutation__
+ *
+ * To run a mutation, you first call `useLoginMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginMutation, { data, loading, error }] = useLoginMutation({
+ *   variables: {
+ *      credentials: // value for 'credentials'
+ *   },
+ * });
+ */
+export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
+        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, baseOptions);
+      }
+export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
+export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
+export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
 export const ListCarsDocument = gql`
     query ListCars {
   cars {
@@ -272,20 +340,39 @@ export type CarFieldPolicy = {
 	yearlyTax?: FieldPolicy<any> | FieldReadFunction<any>,
 	wltpConsumption?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('cars' | QueryKeySpecifier)[];
-export type QueryFieldPolicy = {
+export type UserKeySpecifier = ('username' | 'cars' | UserKeySpecifier)[];
+export type UserFieldPolicy = {
+	username?: FieldPolicy<any> | FieldReadFunction<any>,
 	cars?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('createCar' | 'editCar' | 'removeCar' | MutationKeySpecifier)[];
+export type AuthLoginKeySpecifier = ('access_token' | AuthLoginKeySpecifier)[];
+export type AuthLoginFieldPolicy = {
+	access_token?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type QueryKeySpecifier = ('profile' | 'cars' | QueryKeySpecifier)[];
+export type QueryFieldPolicy = {
+	profile?: FieldPolicy<any> | FieldReadFunction<any>,
+	cars?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MutationKeySpecifier = ('createCar' | 'editCar' | 'removeCar' | 'login' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	createCar?: FieldPolicy<any> | FieldReadFunction<any>,
 	editCar?: FieldPolicy<any> | FieldReadFunction<any>,
-	removeCar?: FieldPolicy<any> | FieldReadFunction<any>
+	removeCar?: FieldPolicy<any> | FieldReadFunction<any>,
+	login?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type TypedTypePolicies = TypePolicies & {
 	Car?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | CarKeySpecifier | (() => undefined | CarKeySpecifier),
 		fields?: CarFieldPolicy,
+	},
+	User?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | UserKeySpecifier | (() => undefined | UserKeySpecifier),
+		fields?: UserFieldPolicy,
+	},
+	AuthLogin?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AuthLoginKeySpecifier | (() => undefined | AuthLoginKeySpecifier),
+		fields?: AuthLoginFieldPolicy,
 	},
 	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),
