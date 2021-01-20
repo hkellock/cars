@@ -17,6 +17,7 @@ import { addLocalCar, editLocalCar, removeLocalCar } from '../../client';
 import TextControl from '../common/TextControl';
 import SelectControl from '../common/SelectControl';
 import NumberControl from '../common/NumberControl';
+import { useSnackbar } from 'notistack';
 
 export const defaultCarInput: CarInput = {
   brand: '',
@@ -32,7 +33,8 @@ type EditDialogProps = {
   setCar: Dispatch<SetStateAction<Car | CarInput | undefined>>;
 };
 
-const isCar = (car?: Car | CarInput): car is Car => Boolean((car as Car)?.id);
+const isExistingCar = (car?: Car | CarInput): car is Car =>
+  Boolean((car as Car)?.id);
 
 const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
   const [brand, setBrand] = React.useState('');
@@ -41,6 +43,8 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
   const [price, setPrice] = React.useState(0);
   const [tax, setTax] = React.useState(0);
   const [wltpConsumption, setWltpConsumption] = React.useState(0);
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   useEffect(() => {
     const newInput = car ?? { ...defaultCarInput };
@@ -52,7 +56,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
     setWltpConsumption(newInput.wltpConsumption);
   }, [car]);
 
-  const [addMutation, { loading, error }] = useAddCarMutation();
+  const [addMutation] = useAddCarMutation();
   const [editMutation] = useModifyCarMutation();
   const [removeMutation] = useRemoveCarMutation();
 
@@ -60,7 +64,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
     setCar(undefined);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const carInput: CarInput = {
       brand,
       model,
@@ -69,29 +73,58 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
       yearlyTax: tax,
       wltpConsumption,
     };
-    isCar(car)
-      ? editMutation({
-          variables: { id: car.id, car: carInput },
-          update: (_, result) =>
-            result.data && editLocalCar(result.data.editCar),
-        })
-      : addMutation({
-          variables: { car: carInput },
-          update: (_, result) =>
-            result.data && addLocalCar(result.data.createCar),
-        });
-    setCar(undefined);
+
+    const infoKey = enqueueSnackbar(
+      `Saving ${carInput.brand} ${carInput.model}`,
+      {
+        variant: 'info',
+      },
+    );
+    try {
+      isExistingCar(car)
+        ? await editMutation({
+            variables: { id: car.id, car: carInput },
+            update: (_, result) =>
+              result.data && editLocalCar(result.data.editCar),
+          })
+        : await addMutation({
+            variables: { car: carInput },
+            update: (_, result) =>
+              result.data && addLocalCar(result.data.createCar),
+          });
+      enqueueSnackbar(`${carInput.brand} ${carInput.model} saved.`, {
+        variant: 'success',
+      });
+      setCar(undefined);
+    } catch (error) {
+      enqueueSnackbar(
+        `Failed to save ${carInput.brand} ${carInput.model}: ${error.message}`,
+        { variant: 'error' },
+      );
+    }
+    closeSnackbar(infoKey);
   };
 
-  const handleRemove = () => {
-    if (!isCar(car)) return;
-    removeMutation({ variables: { id: car.id } });
-    removeLocalCar(car);
-    setCar(undefined);
+  const handleRemove = async () => {
+    if (!isExistingCar(car)) return;
+    const infoKey = enqueueSnackbar(`Removing ${car.brand} ${car.model}`, {
+      variant: 'info',
+    });
+    try {
+      await removeMutation({ variables: { id: car.id } });
+      removeLocalCar(car);
+      enqueueSnackbar(`${car.brand} ${car.model} removed.`, {
+        variant: 'success',
+      });
+      setCar(undefined);
+    } catch (error) {
+      enqueueSnackbar(
+        `Failed to remove ${car.brand} ${car.model}: ${error.message}`,
+        { variant: 'error' },
+      );
+    }
+    closeSnackbar(infoKey);
   };
-
-  if (loading) return <p>Saving car...</p>;
-  if (error) return <p>Error while saving car: {error.message}</p>;
 
   return (
     <Dialog open={Boolean(car)} onClose={handleClose}>
