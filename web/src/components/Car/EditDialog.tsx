@@ -18,6 +18,7 @@ import TextControl from '../common/TextControl';
 import SelectControl from '../common/SelectControl';
 import NumberControl from '../common/NumberControl';
 import { useSnackbar } from 'notistack';
+import useNotifications from '../../hooks/useNotifications';
 
 export const defaultCarInput: CarInput = {
   brand: '',
@@ -44,7 +45,12 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
   const [tax, setTax] = React.useState(0);
   const [wltpConsumption, setWltpConsumption] = React.useState(0);
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const {
+    closeSnackbar,
+    enqueueInfo,
+    enqueueSuccess,
+    enqueueError,
+  } = useNotifications();
 
   useEffect(() => {
     const newInput = car ?? { ...defaultCarInput };
@@ -74,12 +80,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
       wltpConsumption,
     };
 
-    const infoKey = enqueueSnackbar(
-      `Saving ${carInput.brand} ${carInput.model}`,
-      {
-        variant: 'info',
-      },
-    );
+    const infoKey = enqueueInfo(`Saving ${carInput.brand} ${carInput.model}`);
     try {
       isExistingCar(car)
         ? await editMutation({
@@ -92,14 +93,11 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
             update: (_, result) =>
               result.data && addLocalCar(result.data.createCar),
           });
-      enqueueSnackbar(`${carInput.brand} ${carInput.model} saved.`, {
-        variant: 'success',
-      });
+      enqueueSuccess(`${carInput.brand} ${carInput.model} saved.`);
       setCar(undefined);
     } catch (error) {
-      enqueueSnackbar(
+      enqueueError(
         `Failed to save ${carInput.brand} ${carInput.model}: ${error.message}`,
-        { variant: 'error' },
       );
     }
     closeSnackbar(infoKey);
@@ -107,20 +105,15 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
 
   const handleRemove = async () => {
     if (!isExistingCar(car)) return;
-    const infoKey = enqueueSnackbar(`Removing ${car.brand} ${car.model}`, {
-      variant: 'info',
-    });
+    const infoKey = enqueueInfo(`Removing ${car.brand} ${car.model}`);
     try {
       await removeMutation({ variables: { id: car.id } });
       removeLocalCar(car);
-      enqueueSnackbar(`${car.brand} ${car.model} removed.`, {
-        variant: 'success',
-      });
+      enqueueSuccess(`${car.brand} ${car.model} removed.`);
       setCar(undefined);
     } catch (error) {
-      enqueueSnackbar(
+      enqueueError(
         `Failed to remove ${car.brand} ${car.model}: ${error.message}`,
-        { variant: 'error' },
       );
     }
     closeSnackbar(infoKey);
