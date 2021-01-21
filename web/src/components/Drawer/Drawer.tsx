@@ -11,10 +11,15 @@ import {
 } from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
+import { client } from '../../client';
+import useUser from '../../hooks/useUser';
 
 const Drawer: React.FC = () => {
   const [open, setOpen] = useState(false);
   const navigate = useHistory().push;
+
+  const user = useUser();
+
   return (
     <>
       <AppBar position="sticky">
@@ -31,6 +36,39 @@ const Drawer: React.FC = () => {
         onClose={() => setOpen(false)}
       >
         <List>
+          {user ? (
+            <>
+              <ListItem key="user">
+                <ListItemText primary={`Logged in as ${user.username}`} />
+              </ListItem>
+
+              <ListItem
+                button
+                key="logout"
+                onClick={async () => {
+                  localStorage.clear();
+                  await client.clearStore();
+                  navigate('/login');
+                  setOpen(false);
+                }}
+              >
+                <ListItemText primary="Logout" />
+              </ListItem>
+            </>
+          ) : (
+            <ListItem
+              button
+              key="login"
+              onClick={() => {
+                navigate('/login');
+                setOpen(false);
+              }}
+            >
+              <ListItemText primary="Login" />
+            </ListItem>
+          )}
+          <Divider />
+
           <ListItem
             button
             key="comparison"
@@ -42,29 +80,21 @@ const Drawer: React.FC = () => {
             <ListItemText primary="Comparison" />
           </ListItem>
 
-          <Divider />
-          <ListItem
-            button
-            key="cars"
-            onClick={() => {
-              navigate('/cars');
-              setOpen(false);
-            }}
-          >
-            <ListItemText primary="Manage cars" />
-          </ListItem>
-          <Divider />
-
-          <ListItem
-            button
-            key="login"
-            onClick={() => {
-              navigate('/login');
-              setOpen(false);
-            }}
-          >
-            <ListItemText primary="Login" />
-          </ListItem>
+          {user ? (
+            <>
+              <Divider />
+              <ListItem
+                button
+                key="cars"
+                onClick={() => {
+                  navigate('/cars');
+                  setOpen(false);
+                }}
+              >
+                <ListItemText primary="Manage cars" />
+              </ListItem>
+            </>
+          ) : null}
         </List>
       </SwipeableDrawer>
     </>

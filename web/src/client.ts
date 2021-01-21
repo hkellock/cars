@@ -1,5 +1,15 @@
-import { ApolloClient, InMemoryCache, makeVar } from '@apollo/client';
-import { Car, TypedTypePolicies } from './types/generated-types-and-hooks';
+import {
+  ApolloClient,
+  createHttpLink,
+  InMemoryCache,
+  makeVar,
+} from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import {
+  Car,
+  TypedTypePolicies,
+  User,
+} from './types/generated-types-and-hooks';
 
 export const carsVar = makeVar<Car[]>([]);
 
@@ -11,10 +21,9 @@ export const editLocalCar = (car: Car) =>
 export const removeLocalCar = (car: Car) =>
   carsVar([...carsVar().filter((c) => c.id !== car.id)]);
 
-export type LocalUser = {
+type LocalUser = {
   username: string;
   carIds: string[];
-  accessToken: string;
 };
 
 export const userVar = makeVar<LocalUser | null>(null);
@@ -25,15 +34,32 @@ const typePolicies: TypedTypePolicies = {
       localCars: {
         read: carsVar,
       },
-      localUser: {
+      profile: {
         read: userVar,
+        merge: (_, incoming: User) =>
+          userVar({
+            username: incoming.username,
+            carIds: incoming.cars.map((c) => c.id),
+          }),
       },
     },
   },
 };
 
+const httpLink = createHttpLink({ uri: 'http://localhost:8000/graphql' });
+
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem('access_token');
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+});
+
 export const client = new ApolloClient({
-  uri: 'http://localhost:8000/graphql',
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache({
     typePolicies,
   }),
