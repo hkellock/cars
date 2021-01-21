@@ -11,11 +11,22 @@ export const editLocalCar = (car: Car) =>
 export const removeLocalCar = (car: Car) =>
   carsVar([...carsVar().filter((c) => c.id !== car.id)]);
 
+export type LocalUser = {
+  username: string;
+  carIds: string[];
+  accessToken: string;
+};
+
+export const userVar = makeVar<LocalUser | null>(null);
+
 const typePolicies: TypedTypePolicies = {
   Query: {
     fields: {
       localCars: {
         read: carsVar,
+      },
+      localUser: {
+        read: userVar,
       },
     },
   },

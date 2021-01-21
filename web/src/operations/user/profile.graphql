@@ -1,0 +1,8 @@
+query Profile {
+  profile {
+    username
+    cars {
+      id
+    }
+  }
+}

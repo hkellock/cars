@@ -152,6 +152,21 @@ export type ModifyCarMutation = (
   ) }
 );
 
+export type ProfileQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ProfileQuery = (
+  { __typename?: 'Query' }
+  & { profile: (
+    { __typename?: 'User' }
+    & Pick<User, 'username'>
+    & { cars: Array<(
+      { __typename?: 'Car' }
+      & Pick<Car, 'id'>
+    )> }
+  ) }
+);
+
 
 export const LoginDocument = gql`
     mutation Login($credentials: LoginCredentials!) {
@@ -330,6 +345,41 @@ export function useModifyCarMutation(baseOptions?: Apollo.MutationHookOptions<Mo
 export type ModifyCarMutationHookResult = ReturnType<typeof useModifyCarMutation>;
 export type ModifyCarMutationResult = Apollo.MutationResult<ModifyCarMutation>;
 export type ModifyCarMutationOptions = Apollo.BaseMutationOptions<ModifyCarMutation, ModifyCarMutationVariables>;
+export const ProfileDocument = gql`
+    query Profile {
+  profile {
+    username
+    cars {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useProfileQuery__
+ *
+ * To run a query within a React component, call `useProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProfileQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useProfileQuery(baseOptions?: Apollo.QueryHookOptions<ProfileQuery, ProfileQueryVariables>) {
+        return Apollo.useQuery<ProfileQuery, ProfileQueryVariables>(ProfileDocument, baseOptions);
+      }
+export function useProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProfileQuery, ProfileQueryVariables>) {
+          return Apollo.useLazyQuery<ProfileQuery, ProfileQueryVariables>(ProfileDocument, baseOptions);
+        }
+export type ProfileQueryHookResult = ReturnType<typeof useProfileQuery>;
+export type ProfileLazyQueryHookResult = ReturnType<typeof useProfileLazyQuery>;
+export type ProfileQueryResult = Apollo.QueryResult<ProfileQuery, ProfileQueryVariables>;
 export type CarKeySpecifier = ('id' | 'brand' | 'model' | 'type' | 'price' | 'yearlyTax' | 'wltpConsumption' | CarKeySpecifier)[];
 export type CarFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
