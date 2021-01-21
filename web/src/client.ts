@@ -3,6 +3,7 @@ import {
   createHttpLink,
   InMemoryCache,
   makeVar,
+  Reference,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import {
@@ -31,8 +32,24 @@ export const userVar = makeVar<LocalUser | null>(null);
 const typePolicies: TypedTypePolicies = {
   Query: {
     fields: {
-      localCars: {
+      cars: {
         read: carsVar,
+        merge: (_, incoming: Reference[], { readField }) => {
+          // TODO: How should this really be done?
+          const mapped = incoming.map(
+            (carReference) =>
+              ({
+                id: readField('id', carReference),
+                brand: readField('brand', carReference),
+                model: readField('model', carReference),
+                type: readField('type', carReference),
+                price: readField('price', carReference),
+                yearlyTax: readField('yearlyTax', carReference),
+                wltpConsumption: readField('wltpConsumption', carReference),
+              } as Car),
+          );
+          return carsVar(mapped);
+        },
       },
       profile: {
         read: userVar,
@@ -63,4 +80,5 @@ export const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies,
   }),
+  connectToDevTools: true,
 });

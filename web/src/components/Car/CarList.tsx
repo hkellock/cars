@@ -8,25 +8,16 @@ import {
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import EditDialog, { defaultCarInput } from './EditDialog';
-import {
-  Car,
-  CarInput,
-  useListCarsQuery,
-} from '../../types/generated-types-and-hooks';
-import { useReactiveVar } from '@apollo/client';
-import { carsVar } from '../../client';
+import { Car, CarInput } from '../../types/generated-types-and-hooks';
+import useCars from '../../hooks/useCars';
 
 const CarList: React.FC = () => {
   const [selectedCar, setSelectedCar] = useState<CarInput | undefined>(
     undefined,
   );
-  const { loading, error, data } = useListCarsQuery({
-    onCompleted: (query) => carsVar(query.cars),
-  });
-  const cars = useReactiveVar(carsVar);
+  const cars = useCars();
 
-  if (loading) return <p>Loading...</p>;
-  if (error || !data) return <p>Error!</p>;
+  if (!cars) return <p>Loading...</p>;
 
   const handleAddStart = () => {
     setSelectedCar({ ...defaultCarInput });

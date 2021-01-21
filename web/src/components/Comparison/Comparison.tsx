@@ -1,11 +1,8 @@
 import { useReactiveVar } from '@apollo/client';
 import { Divider, Grid } from '@material-ui/core';
 import React, { useState } from 'react';
-import { carsVar } from '../../client';
-import {
-  CarType,
-  useListCarsQuery,
-} from '../../types/generated-types-and-hooks';
+import useCars from '../../hooks/useCars';
+import { CarType } from '../../types/generated-types-and-hooks';
 import { filterOutElectric, filterForElectric } from '../../utils/carUtils';
 import { transpose } from '../../utils/generalUtils';
 import GridItem from '../common/GridItem';
@@ -18,11 +15,7 @@ const Comparison: React.FC = () => {
   const [secondCar, setSecondCar] = useState<EnrichedCar>();
   const [yearlyDrive, setYearlyDrive] = useState(10000);
 
-  useListCarsQuery({
-    onCompleted: (query) => carsVar(query.cars),
-  });
-
-  const reactiveCars = useReactiveVar(carsVar) ?? [];
+  const reactiveCars = useCars() ?? [];
 
   const cars: EnrichedCar[] = reactiveCars.map((car) => ({
     ...car,
