@@ -1,37 +1,16 @@
-import {
-  ApolloClient,
-  createHttpLink,
-  InMemoryCache,
-  makeVar,
-} from '@apollo/client';
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import {
   Car,
   ListCarsDocument,
   TypedTypePolicies,
-  User,
 } from './types/generated-types-and-hooks';
-
-type LocalUser = {
-  username: string;
-  carIds: string[];
-};
-
-export const userVar = makeVar<LocalUser | null>(null);
 
 const typePolicies: TypedTypePolicies = {
   Query: {
     fields: {
       cars: {
         merge: false,
-      },
-      profile: {
-        read: userVar,
-        merge: (_, incoming: User) =>
-          userVar({
-            username: incoming.username,
-            carIds: incoming.cars.map((c) => c.id),
-          }),
       },
     },
   },
@@ -60,7 +39,5 @@ export const client = new ApolloClient({
 export const updateCachedCars = (cars: Car[]) =>
   client.writeQuery({
     query: ListCarsDocument,
-    data: {
-      cars,
-    },
+    data: { cars },
   });

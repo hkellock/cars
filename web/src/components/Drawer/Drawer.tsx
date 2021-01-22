@@ -18,7 +18,7 @@ const Drawer: React.FC = () => {
   const [open, setOpen] = useState(false);
   const navigate = useHistory().push;
 
-  const user = useUser();
+  const { user } = useUser();
 
   return (
     <>
@@ -47,7 +47,7 @@ const Drawer: React.FC = () => {
                 key="logout"
                 onClick={async () => {
                   localStorage.clear();
-                  await client.clearStore();
+                  await client.resetStore();
                   navigate('/login');
                   setOpen(false);
                 }}
