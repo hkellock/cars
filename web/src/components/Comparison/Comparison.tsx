@@ -1,4 +1,3 @@
-import { useReactiveVar } from '@apollo/client';
 import { Divider, Grid } from '@material-ui/core';
 import React, { useState } from 'react';
 import useCars from '../../hooks/useCars';
@@ -15,7 +14,7 @@ const Comparison: React.FC = () => {
   const [secondCar, setSecondCar] = useState<EnrichedCar>();
   const [yearlyDrive, setYearlyDrive] = useState(10000);
 
-  const reactiveCars = useCars() ?? [];
+  const reactiveCars = useCars().cars;
 
   const cars: EnrichedCar[] = reactiveCars.map((car) => ({
     ...car,

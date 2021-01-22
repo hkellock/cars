@@ -15,7 +15,7 @@ const CarList: React.FC = () => {
   const [selectedCar, setSelectedCar] = useState<CarInput | undefined>(
     undefined,
   );
-  const cars = useCars();
+  const { cars } = useCars();
 
   if (!cars) return <p>Loading...</p>;
 

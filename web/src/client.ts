@@ -3,24 +3,14 @@ import {
   createHttpLink,
   InMemoryCache,
   makeVar,
-  Reference,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import {
   Car,
+  ListCarsDocument,
   TypedTypePolicies,
   User,
 } from './types/generated-types-and-hooks';
-
-export const carsVar = makeVar<Car[]>([]);
-
-export const addLocalCar = (car: Car) => carsVar([...carsVar(), car]);
-
-export const editLocalCar = (car: Car) =>
-  carsVar([...carsVar().filter((c) => c.id !== car.id), car]);
-
-export const removeLocalCar = (car: Car) =>
-  carsVar([...carsVar().filter((c) => c.id !== car.id)]);
 
 type LocalUser = {
   username: string;
@@ -33,23 +23,7 @@ const typePolicies: TypedTypePolicies = {
   Query: {
     fields: {
       cars: {
-        read: carsVar,
-        merge: (_, incoming: Reference[], { readField }) => {
-          // TODO: How should this really be done?
-          const mapped = incoming.map(
-            (carReference) =>
-              ({
-                id: readField('id', carReference),
-                brand: readField('brand', carReference),
-                model: readField('model', carReference),
-                type: readField('type', carReference),
-                price: readField('price', carReference),
-                yearlyTax: readField('yearlyTax', carReference),
-                wltpConsumption: readField('wltpConsumption', carReference),
-              } as Car),
-          );
-          return carsVar(mapped);
-        },
+        merge: false,
       },
       profile: {
         read: userVar,
@@ -82,3 +56,11 @@ export const client = new ApolloClient({
   }),
   connectToDevTools: true,
 });
+
+export const updateCachedCars = (cars: Car[]) =>
+  client.writeQuery({
+    query: ListCarsDocument,
+    data: {
+      cars,
+    },
+  });

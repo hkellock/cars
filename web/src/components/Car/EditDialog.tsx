@@ -5,15 +5,8 @@ import {
   DialogActions,
   DialogContent,
 } from '@material-ui/core';
-import {
-  Car,
-  CarInput,
-  CarType,
-  useAddCarMutation,
-  useModifyCarMutation,
-  useRemoveCarMutation,
-} from '../../types/generated-types-and-hooks';
-import { addLocalCar, editLocalCar, removeLocalCar } from '../../client';
+import { Car, CarInput, CarType } from '../../types/generated-types-and-hooks';
+import useCars from '../../hooks/useCars';
 import TextControl from '../common/TextControl';
 import SelectControl from '../common/SelectControl';
 import NumberControl from '../common/NumberControl';
@@ -51,6 +44,8 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
     enqueueError,
   } = useNotifications();
 
+  const { addCar, editCar, removeCar } = useCars();
+
   useEffect(() => {
     const newInput = car ?? { ...defaultCarInput };
     setBrand(newInput.brand);
@@ -60,10 +55,6 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
     setTax(newInput.yearlyTax);
     setWltpConsumption(newInput.wltpConsumption);
   }, [car]);
-
-  const [addMutation] = useAddCarMutation();
-  const [editMutation] = useModifyCarMutation();
-  const [removeMutation] = useRemoveCarMutation();
 
   const handleClose = () => {
     setCar(undefined);
@@ -82,16 +73,8 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
     const infoKey = enqueueInfo(`Saving ${carInput.brand} ${carInput.model}`);
     try {
       isExistingCar(car)
-        ? await editMutation({
-            variables: { id: car.id, car: carInput },
-            update: (_, result) =>
-              result.data && editLocalCar(result.data.editCar),
-          })
-        : await addMutation({
-            variables: { car: carInput },
-            update: (_, result) =>
-              result.data && addLocalCar(result.data.createCar),
-          });
+        ? await editCar(car.id, carInput)
+        : await addCar(carInput);
       enqueueSuccess(`${carInput.brand} ${carInput.model} saved.`);
       setCar(undefined);
     } catch (error) {
@@ -106,8 +89,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
     if (!isExistingCar(car)) return;
     const infoKey = enqueueInfo(`Removing ${car.brand} ${car.model}`);
     try {
-      await removeMutation({ variables: { id: car.id } });
-      removeLocalCar(car);
+      await removeCar(car);
       enqueueSuccess(`${car.brand} ${car.model} removed.`);
       setCar(undefined);
     } catch (error) {
