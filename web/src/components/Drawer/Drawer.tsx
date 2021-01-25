@@ -16,9 +16,20 @@ import useUser from '../../hooks/useUser';
 
 const Drawer: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const navigate = useHistory().push;
+  const { push } = useHistory();
 
   const { user } = useUser();
+
+  const navigateTo = (path: string) => {
+    push(path);
+    setOpen(false);
+  };
+
+  const handleLogout = async () => {
+    localStorage.clear();
+    await client.resetStore();
+    navigateTo('/login');
+  };
 
   return (
     <>
@@ -42,55 +53,25 @@ const Drawer: React.FC = () => {
                 <ListItemText primary={`Logged in as ${user.username}`} />
               </ListItem>
 
-              <ListItem
-                button
-                key="logout"
-                onClick={async () => {
-                  localStorage.clear();
-                  await client.resetStore();
-                  navigate('/login');
-                  setOpen(false);
-                }}
-              >
+              <ListItem button key="logout" onClick={handleLogout}>
                 <ListItemText primary="Logout" />
               </ListItem>
             </>
           ) : (
-            <ListItem
-              button
-              key="login"
-              onClick={() => {
-                navigate('/login');
-                setOpen(false);
-              }}
-            >
+            <ListItem button key="login" onClick={() => navigateTo('/login')}>
               <ListItemText primary="Login" />
             </ListItem>
           )}
           <Divider />
 
-          <ListItem
-            button
-            key="comparison"
-            onClick={() => {
-              navigate('/');
-              setOpen(false);
-            }}
-          >
+          <ListItem button key="comparison" onClick={() => navigateTo('/')}>
             <ListItemText primary="Comparison" />
           </ListItem>
 
           {user ? (
             <>
               <Divider />
-              <ListItem
-                button
-                key="cars"
-                onClick={() => {
-                  navigate('/cars');
-                  setOpen(false);
-                }}
-              >
+              <ListItem button key="cars" onClick={() => navigateTo('/cars')}>
                 <ListItemText primary="Manage cars" />
               </ListItem>
             </>
