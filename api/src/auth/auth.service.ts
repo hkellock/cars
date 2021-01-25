@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntityWithoutRelations, UserService } from 'src/user/user.service';
+import { UserWithoutRelations, UserService } from 'src/user/user.service';
 import { LoginCredentials } from './auth.input';
 import { AuthLogin } from './auth.model';
 
@@ -9,7 +9,7 @@ export type AccessTokenPayload = {
   sub: string;
 };
 
-type UserWithoutRelations = Pick<UserEntityWithoutRelations, 'username'>;
+type User = Pick<UserWithoutRelations, 'username'>;
 
 @Injectable()
 export class AuthService {
@@ -20,7 +20,7 @@ export class AuthService {
 
   private async validateUser(
     credentials: LoginCredentials,
-  ): Promise<UserWithoutRelations | null> {
+  ): Promise<User | null> {
     // TODO: Validate idToken with external service
     // TODO: Check that email in idToken is the same as the username
     const user =

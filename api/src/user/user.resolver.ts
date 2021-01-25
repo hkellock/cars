@@ -1,7 +1,7 @@
 import { Resolver, Query } from '@nestjs/graphql';
 import type { ValidatedUser } from 'src/auth/jwt.strategy';
 import { CurrentUser } from './current-user.decorator';
-import { User } from './user.model';
+import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @Resolver(() => User)

@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { CarService } from './car.service';
-import { Car } from './car.model';
+import { Car } from './car.entity';
 import { CarInput } from './car.input';
 import { Public } from 'src/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/user/current-user.decorator';

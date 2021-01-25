@@ -1,29 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User as UserEntity } from './user.entity';
+import { User } from './user.entity';
 
-export type UserEntityWithoutRelations = Pick<UserEntity, 'id' | 'username'>;
+export type UserWithoutRelations = Pick<User, 'id' | 'username'>;
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(username: string): Promise<UserEntityWithoutRelations> {
+  async create(username: string): Promise<UserWithoutRelations> {
     const user = this.userRepository.create({ username });
     return await this.userRepository.save(user);
   }
 
-  async findOne(
-    username: string,
-  ): Promise<UserEntityWithoutRelations | undefined> {
+  async findOne(username: string): Promise<UserWithoutRelations | undefined> {
     return await this.userRepository.findOne({ username });
   }
 
-  async findOneWithCars(username: string): Promise<UserEntity | undefined> {
+  async findOneWithCars(username: string): Promise<User | undefined> {
     return await this.userRepository.findOne(
       { username },
       { relations: ['cars'] },
