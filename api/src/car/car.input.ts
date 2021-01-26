@@ -12,12 +12,15 @@ export class CarInput {
   @Field(() => CarType!)
   type: string;
 
-  @Field((type) => Number!)
+  @Field((type) => Number)
   price: number;
 
-  @Field((type) => Number!)
+  @Field((type) => Number)
   yearlyTax: number;
 
-  @Field((type) => Number!)
+  @Field((type) => Number)
   wltpConsumption: number;
+
+  @Field((type) => [String])
+  compareToIds: string[];
 }

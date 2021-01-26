@@ -10,6 +10,7 @@ type Car {
   price: Float!
   yearlyTax: Float!
   wltpConsumption: Float!
+  compareTo: [Car!]
 }
 
 enum CarType {
@@ -46,6 +47,7 @@ input CarInput {
   price: Float!
   yearlyTax: Float!
   wltpConsumption: Float!
+  compareToIds: [String!]!
 }
 
 input LoginCredentials {
