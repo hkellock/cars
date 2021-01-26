@@ -8,13 +8,13 @@ import {
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import EditDialog, { defaultCarInput } from './EditDialog';
-import { Car, CarInput } from '../../types/generated-types-and-hooks';
-import useCars from '../../hooks/useCars';
+import { CarInput } from '../../types/generated-types-and-hooks';
+import useCars, { ListCar } from '../../hooks/useCars';
 
 const CarList: React.FC = () => {
-  const [selectedCar, setSelectedCar] = useState<CarInput | undefined>(
-    undefined,
-  );
+  const [selectedCar, setSelectedCar] = useState<
+    ListCar | CarInput | undefined
+  >(undefined);
   const { cars } = useCars();
 
   if (!cars) return <p>Loading...</p>;
@@ -23,7 +23,7 @@ const CarList: React.FC = () => {
     setSelectedCar({ ...defaultCarInput });
   };
 
-  const handleEditStart = (car: Car) => () => {
+  const handleEditStart = (car: ListCar) => () => {
     setSelectedCar(car);
   };
 

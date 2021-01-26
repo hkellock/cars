@@ -7,5 +7,8 @@ query ListCars {
     price
     yearlyTax
     wltpConsumption
+    compareTo {
+      id
+    }
   }
 }

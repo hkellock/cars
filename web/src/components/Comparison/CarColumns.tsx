@@ -1,6 +1,6 @@
 import { Divider } from '@material-ui/core';
 import React, { Dispatch, SetStateAction } from 'react';
-import { Car } from '../../types/generated-types-and-hooks';
+import type { ListCar } from '../../hooks/useCars';
 import {
   mapCarToOption,
   priceToString,
@@ -8,7 +8,7 @@ import {
 } from '../../utils/carUtils';
 import SelectControl from '../common/SelectControl';
 
-export type EnrichedCar = Car & {
+export type EnrichedCar = ListCar & {
   priceAfterSubsidies?: number;
   drivePrice?: number;
 };

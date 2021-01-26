@@ -9,6 +9,8 @@ import SelectControl from '../common/SelectControl';
 import CarColumns, { EnrichedCar } from './CarColumns';
 import GridRow, { GridRowProps } from './GridRow';
 
+const YEARLY_DRIVE_OPTIONS = [10000, 15000, 20000, 30000, 40000];
+
 const Comparison: React.FC = () => {
   const [firstCar, setFirstCar] = useState<EnrichedCar>();
   const [secondCar, setSecondCar] = useState<EnrichedCar>();
@@ -78,7 +80,7 @@ const Comparison: React.FC = () => {
           label="Vuosikilometrit"
           value={yearlyDrive}
           setValue={setYearlyDrive}
-          options={[10000, 15000, 20000, 30000, 40000]}
+          options={YEARLY_DRIVE_OPTIONS}
         />
       </GridItem>
 

@@ -1,12 +1,12 @@
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
 } from '@material-ui/core';
-import { Car, CarInput, CarType } from '../../types/generated-types-and-hooks';
-import useCars from '../../hooks/useCars';
+import { CarInput, CarType } from '../../types/generated-types-and-hooks';
+import useCars, { ListCar } from '../../hooks/useCars';
 import TextControl from '../common/TextControl';
 import SelectControl from '../common/SelectControl';
 import NumberControl from '../common/NumberControl';
@@ -19,23 +19,25 @@ export const defaultCarInput: CarInput = {
   price: 10000.0,
   yearlyTax: 100.0,
   wltpConsumption: 10.0,
+  compareToIds: [],
 };
 
 type EditDialogProps = {
-  car?: Car | CarInput;
-  setCar: Dispatch<SetStateAction<Car | CarInput | undefined>>;
+  car?: ListCar | CarInput;
+  setCar: Dispatch<SetStateAction<ListCar | CarInput | undefined>>;
 };
 
-const isExistingCar = (car?: Car | CarInput): car is Car =>
-  Boolean((car as Car)?.id);
+const isExistingCar = (car?: ListCar | CarInput): car is ListCar =>
+  Boolean((car as ListCar)?.id);
 
 const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
-  const [brand, setBrand] = React.useState('');
-  const [model, setModel] = React.useState('');
-  const [type, setType] = React.useState(CarType.Electric);
-  const [price, setPrice] = React.useState(0);
-  const [tax, setTax] = React.useState(0);
-  const [wltpConsumption, setWltpConsumption] = React.useState(0);
+  const [brand, setBrand] = useState('');
+  const [model, setModel] = useState('');
+  const [type, setType] = useState(CarType.Electric);
+  const [price, setPrice] = useState(0);
+  const [tax, setTax] = useState(0);
+  const [wltpConsumption, setWltpConsumption] = useState(0);
+  const [compareTo, setCompareTo] = useState<string[]>([]);
 
   const {
     closeSnackbar,
@@ -44,16 +46,19 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
     enqueueError,
   } = useNotifications();
 
-  const { addCar, editCar, removeCar } = useCars();
+  const { addCar, editCar, removeCar, cars } = useCars();
 
   useEffect(() => {
-    const newInput = car ?? { ...defaultCarInput };
+    const newInput = isExistingCar(car)
+      ? { ...car, compareToIds: car.compareTo?.map((c) => c.id) ?? [] }
+      : { ...defaultCarInput };
     setBrand(newInput.brand);
     setModel(newInput.model);
     setType(newInput.type);
     setPrice(newInput.price);
     setTax(newInput.yearlyTax);
     setWltpConsumption(newInput.wltpConsumption);
+    setCompareTo(newInput.compareToIds);
   }, [car]);
 
   const handleClose = () => {
@@ -68,6 +73,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
       price,
       yearlyTax: tax,
       wltpConsumption,
+      compareToIds: compareTo,
     };
 
     const infoKey = enqueueInfo(`Saving ${carInput.brand} ${carInput.model}`);
@@ -125,6 +131,18 @@ const EditDialog: React.FC<EditDialogProps> = ({ car, setCar }) => {
           }/100km)`}
           value={wltpConsumption}
           setValue={setWltpConsumption}
+        />
+        <SelectControl
+          label="Compare to"
+          multiple
+          value={compareTo}
+          setValue={setCompareTo}
+          options={cars
+            .filter((c) => c.type !== type)
+            .map((c) => ({
+              value: c.id,
+              label: `${c.brand} ${c.model}`,
+            }))}
         />
       </DialogContent>
       <DialogActions>

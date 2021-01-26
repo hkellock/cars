@@ -23,6 +23,7 @@ export type Car = {
   price: Scalars['Float'];
   yearlyTax: Scalars['Float'];
   wltpConsumption: Scalars['Float'];
+  compareTo?: Maybe<Array<Car>>;
 };
 
 export enum CarType {
@@ -84,6 +85,7 @@ export type CarInput = {
   price: Scalars['Float'];
   yearlyTax: Scalars['Float'];
   wltpConsumption: Scalars['Float'];
+  compareToIds: Array<Scalars['String']>;
 };
 
 export type LoginCredentials = {
@@ -112,6 +114,10 @@ export type ListCarsQuery = (
   & { cars: Array<(
     { __typename?: 'Car' }
     & Pick<Car, 'id' | 'brand' | 'model' | 'type' | 'price' | 'yearlyTax' | 'wltpConsumption'>
+    & { compareTo?: Maybe<Array<(
+      { __typename?: 'Car' }
+      & Pick<Car, 'id'>
+    )>> }
   )> }
 );
 
@@ -210,6 +216,9 @@ export const ListCarsDocument = gql`
     price
     yearlyTax
     wltpConsumption
+    compareTo {
+      id
+    }
   }
 }
     `;
@@ -380,7 +389,7 @@ export function useProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Pr
 export type ProfileQueryHookResult = ReturnType<typeof useProfileQuery>;
 export type ProfileLazyQueryHookResult = ReturnType<typeof useProfileLazyQuery>;
 export type ProfileQueryResult = Apollo.QueryResult<ProfileQuery, ProfileQueryVariables>;
-export type CarKeySpecifier = ('id' | 'brand' | 'model' | 'type' | 'price' | 'yearlyTax' | 'wltpConsumption' | CarKeySpecifier)[];
+export type CarKeySpecifier = ('id' | 'brand' | 'model' | 'type' | 'price' | 'yearlyTax' | 'wltpConsumption' | 'compareTo' | CarKeySpecifier)[];
 export type CarFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	brand?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -388,7 +397,8 @@ export type CarFieldPolicy = {
 	type?: FieldPolicy<any> | FieldReadFunction<any>,
 	price?: FieldPolicy<any> | FieldReadFunction<any>,
 	yearlyTax?: FieldPolicy<any> | FieldReadFunction<any>,
-	wltpConsumption?: FieldPolicy<any> | FieldReadFunction<any>
+	wltpConsumption?: FieldPolicy<any> | FieldReadFunction<any>,
+	compareTo?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type UserKeySpecifier = ('username' | 'cars' | UserKeySpecifier)[];
 export type UserFieldPolicy = {

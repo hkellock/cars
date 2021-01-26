@@ -1,10 +1,6 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import {
-  Car,
-  ListCarsDocument,
-  TypedTypePolicies,
-} from './types/generated-types-and-hooks';
+import { TypedTypePolicies } from './types/generated-types-and-hooks';
 
 const typePolicies: TypedTypePolicies = {
   Query: {
@@ -36,8 +32,3 @@ export const client = new ApolloClient({
   connectToDevTools: true,
 });
 
-export const updateCachedCars = (cars: Car[]) =>
-  client.writeQuery({
-    query: ListCarsDocument,
-    data: { cars },
-  });
