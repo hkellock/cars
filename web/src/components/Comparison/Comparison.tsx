@@ -2,14 +2,18 @@ import { Divider, Grid } from '@material-ui/core';
 import React, { useState } from 'react';
 import useCars from '../../hooks/useCars';
 import { CarType } from '../../types/generated-types-and-hooks';
-import { filterOutElectric, filterForElectric } from '../../utils/carUtils';
+import {
+  filterOutElectric,
+  filterForElectric,
+  createFilterByIds,
+} from '../../utils/carUtils';
 import { transpose } from '../../utils/generalUtils';
 import GridItem from '../common/GridItem';
 import SelectControl from '../common/SelectControl';
 import CarColumns, { EnrichedCar } from './CarColumns';
 import GridRow, { GridRowProps } from './GridRow';
 
-const YEARLY_DRIVE_OPTIONS = [10000, 15000, 20000, 30000, 40000];
+const YEARLY_DRIVE_OPTIONS = [5000, 10000, 15000, 20000, 30000, 40000];
 
 const Comparison: React.FC = () => {
   const [firstCar, setFirstCar] = useState<EnrichedCar>();
@@ -45,14 +49,18 @@ const Comparison: React.FC = () => {
   );
 
   const firstCarElements: JSX.Element[] = CarColumns({
-    cars: cars.filter(filterOutElectric),
+    cars: cars
+      .filter(filterOutElectric)
+      .filter(createFilterByIds(secondCar?.compareTo?.map((ct) => ct.id))),
     yearlyDrive,
     setCar: setFirstCar,
     car: firstCar,
   });
 
   const secondCarElements: JSX.Element[] = CarColumns({
-    cars: cars.filter(filterForElectric),
+    cars: cars
+      .filter(filterForElectric)
+      .filter(createFilterByIds(firstCar?.compareTo?.map((ct) => ct.id))),
     yearlyDrive,
     setCar: setSecondCar,
     car: secondCar,

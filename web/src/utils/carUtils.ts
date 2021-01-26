@@ -15,6 +15,8 @@ export const filterForElectric = (car: ListCar): boolean =>
   car.type === CarType.Electric;
 export const filterOutElectric = (car: ListCar): boolean =>
   car.type !== CarType.Electric;
+export const createFilterByIds = (ids?: string[]) => (car: ListCar) =>
+  ids?.includes(car.id) ?? true;
 
 // Component utils
 
