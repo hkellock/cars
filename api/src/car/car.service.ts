@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ValidatedUser } from 'src/auth/jwt.strategy';
-import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
+import { ValidatedUser } from '../auth/jwt.strategy';
+import { UserService } from '../user/user.service';
 import { Car } from './car.entity';
 import { CarInput } from './car.input';
 
@@ -31,27 +31,24 @@ export class CarService {
     private readonly userService: UserService,
   ) {}
 
-  private async findById(id: string): Promise<Car> {
-    return await this.carRepository
+  private createQueryWithCompareTo = () =>
+    this.carRepository
       .createQueryBuilder('car')
+      .leftJoinAndSelect('car.compareTo', 'compareTo');
+
+  async findById(id: string): Promise<Car> {
+    return await this.createQueryWithCompareTo()
+      .leftJoinAndSelect('car.user', 'user')
       .where('car.id = :id', { id })
-      .leftJoinAndSelect('car.compareTo', 'compareTo')
       .getOne();
   }
 
   private async findByIds(ids: string[]): Promise<Car[]> {
-    return await this.carRepository
-      .createQueryBuilder('car')
-      .whereInIds(ids)
-      .leftJoinAndSelect('car.compareTo', 'compareTo')
-      .getMany();
+    return await this.createQueryWithCompareTo().whereInIds(ids).getMany();
   }
 
   async findAll(): Promise<Car[]> {
-    return await this.carRepository
-      .createQueryBuilder('car')
-      .leftJoinAndSelect('car.compareTo', 'compareTo')
-      .getMany();
+    return await this.createQueryWithCompareTo().getMany();
   }
 
   async add(input: CarInput, validatedUser: ValidatedUser): Promise<Car> {
@@ -73,8 +70,7 @@ export class CarService {
     return savedCar;
   }
 
-  async edit(id: string, input: CarInput): Promise<Car> {
-    const oldCar = await this.findById(id);
+  async edit(oldCar: Car, input: CarInput): Promise<Car> {
     const oldComparisons = oldCar.compareTo
       ? await this.findByIds(oldCar.compareTo.map((ct) => ct.id))
       : [];

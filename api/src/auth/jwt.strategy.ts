@@ -7,6 +7,7 @@ import { AccessTokenPayload } from './auth.service';
 export type ValidatedUser = {
   userId: string;
   username: string;
+  isAdmin: boolean;
 };
 
 @Injectable()
@@ -23,6 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return {
       userId: payload.sub, // TODO
       username: payload.username,
+      isAdmin: false,
     };
   }
 }
