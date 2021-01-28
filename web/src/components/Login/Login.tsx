@@ -34,7 +34,15 @@ const Login: React.FC = () => {
         'access_token',
         loginResult.data?.login.access_token,
       );
-      await client.resetStore();
+      const results = await client.resetStore();
+      const errorSnacks = results
+        ?.filter((r) => Boolean(r.errors))
+        .flatMap((r) => r.errors)
+        .map((e) =>
+          enqueueError(e?.message ?? 'Failed to get profile and cars.'),
+        );
+      if (errorSnacks?.length ?? 0 > 0) return;
+
       enqueueSuccess('Login successful');
       navigate('/');
     } catch (error) {
