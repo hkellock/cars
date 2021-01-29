@@ -1,5 +1,6 @@
 import { Resolver, Query } from '@nestjs/graphql';
-import type { ValidatedUser } from 'src/auth/jwt.strategy';
+import { canReadUser, CheckPolicies } from 'src/casl/casl.decorator';
+import type { ValidatedUser } from '../auth/jwt.strategy';
 import { CurrentUser } from './current-user.decorator';
 import { User } from './user.entity';
 import { UserService } from './user.service';
@@ -8,6 +9,7 @@ import { UserService } from './user.service';
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
+  @CheckPolicies(canReadUser)
   @Query(() => User!)
   async profile(@CurrentUser() user: ValidatedUser) {
     return await this.userService.findOneWithCars(user.username);

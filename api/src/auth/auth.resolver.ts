@@ -1,8 +1,8 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Public } from 'src/casl/public.decorator';
 import { LoginCredentials } from './auth.input';
 import { AuthLogin } from './auth.model';
 import { AuthService } from './auth.service';
-import { Public } from './jwt-auth.guard';
 
 @Resolver(() => AuthLogin)
 export class AuthResolver {

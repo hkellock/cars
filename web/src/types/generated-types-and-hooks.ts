@@ -14,6 +14,12 @@ export type Scalars = {
   Float: number;
 };
 
+export type User = {
+  __typename?: 'User';
+  username: Scalars['String'];
+  cars: Array<Car>;
+};
+
 export type Car = {
   __typename?: 'Car';
   id: Scalars['String'];
@@ -31,12 +37,6 @@ export enum CarType {
   Petrol = 'Petrol',
   Diesel = 'Diesel'
 }
-
-export type User = {
-  __typename?: 'User';
-  username: Scalars['String'];
-  cars: Array<Car>;
-};
 
 export type AuthLogin = {
   __typename?: 'AuthLogin';
@@ -389,6 +389,11 @@ export function useProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Pr
 export type ProfileQueryHookResult = ReturnType<typeof useProfileQuery>;
 export type ProfileLazyQueryHookResult = ReturnType<typeof useProfileLazyQuery>;
 export type ProfileQueryResult = Apollo.QueryResult<ProfileQuery, ProfileQueryVariables>;
+export type UserKeySpecifier = ('username' | 'cars' | UserKeySpecifier)[];
+export type UserFieldPolicy = {
+	username?: FieldPolicy<any> | FieldReadFunction<any>,
+	cars?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type CarKeySpecifier = ('id' | 'brand' | 'model' | 'type' | 'price' | 'yearlyTax' | 'wltpConsumption' | 'compareTo' | CarKeySpecifier)[];
 export type CarFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -399,11 +404,6 @@ export type CarFieldPolicy = {
 	yearlyTax?: FieldPolicy<any> | FieldReadFunction<any>,
 	wltpConsumption?: FieldPolicy<any> | FieldReadFunction<any>,
 	compareTo?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type UserKeySpecifier = ('username' | 'cars' | UserKeySpecifier)[];
-export type UserFieldPolicy = {
-	username?: FieldPolicy<any> | FieldReadFunction<any>,
-	cars?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type AuthLoginKeySpecifier = ('access_token' | AuthLoginKeySpecifier)[];
 export type AuthLoginFieldPolicy = {
@@ -422,13 +422,13 @@ export type MutationFieldPolicy = {
 	login?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type TypedTypePolicies = TypePolicies & {
-	Car?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | CarKeySpecifier | (() => undefined | CarKeySpecifier),
-		fields?: CarFieldPolicy,
-	},
 	User?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | UserKeySpecifier | (() => undefined | UserKeySpecifier),
 		fields?: UserFieldPolicy,
+	},
+	Car?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | CarKeySpecifier | (() => undefined | CarKeySpecifier),
+		fields?: CarFieldPolicy,
 	},
 	AuthLogin?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | AuthLoginKeySpecifier | (() => undefined | AuthLoginKeySpecifier),

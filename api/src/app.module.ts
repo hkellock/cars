@@ -7,7 +7,8 @@ import typeOrmConfig from '../ormconfig';
 import { CarModule } from './car/car.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { jwtAuthGuardProvider } from './auth/jwt-auth.guard';
+import { CaslModule } from './casl/casl.module';
+import { policiesGuardProvider } from './casl/casl-policies.guard';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { jwtAuthGuardProvider } from './auth/jwt-auth.guard';
     CarModule,
     UserModule,
     AuthModule,
+    CaslModule,
   ],
-  providers: [jwtAuthGuardProvider],
+  providers: [policiesGuardProvider],
 })
 export class AppModule {}
